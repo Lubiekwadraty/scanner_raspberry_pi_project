@@ -13,21 +13,27 @@
    
 
 // kod Mai
-
 function updateImage(imgElement) {
-    const streamid = imgElement.getAttribute('id')
-    const baseSrc = `http://staszek-pc:8000/stream/image${streamid}.jpeg`;
-    let preloader = new Image();
-    preloader.onload = function() {
-        imgElement.src = preloader.src;
-    };
-    let newSrc = `${baseSrc}?r=${Math.random()}`;
-    preloader.src = newSrc;
+
+	// create/get preloader
+	let preloader = imgElement._ourPreloader;
+	if (!preloader)
+	{
+		preloader = new Image();
+		imgElement._ourPreloader = preloader;
+	    preloader.onload = function() {
+	        imgElement.src = preloader.src;
+	    };
+	}
+
+	// replace prevoius QS and append random 
+	let src = imgElement.src;
+    preloader.src = src.replace(/\?.*$/, "") + "?"+Math.random();
 }
 
 function loadNewImages() {
     const images = document.querySelectorAll('.mjpg'); 
-    // console.log(images)
+    // console.log(images);
     images.forEach(img => updateImage(img));
 }
 

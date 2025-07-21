@@ -11,7 +11,11 @@ import threading
 import _thread as thread
 import os
 
+# 
+# -------------------------------------------------
+# list_ports 
 # optional functionn to check if there is working camera port
+# -------------------------------------------------
 def list_ports():
         """
         Test the ports and returns a tuple with the available ports 
@@ -41,8 +45,10 @@ def list_ports():
             dev_port +=1
         return available_ports,working_ports
 
-    # Project using external usb webcam
-def main(port, mode, client):
+# -------------------------------------------------
+# decodeMain
+# -------------------------------------------------
+def decodeMain(port, mode, client):
     print('start')
     
     # cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
@@ -51,6 +57,10 @@ def main(port, mode, client):
     cap.set(cv2.CAP_PROP_FRAME_WIDTH,640*1)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT,480*1)
     # cap.set(cv2.CAP_PROP_AUTOFOCUS, 1)
+    
+    #possible = cap.set(cv2.CAP_PROP_MODE, cv2.CAP_MODE_GRAY)
+    #print("CAP_MODE_GRAY: " + possible)    
+    
     print(cap)
     LastReadTime = 0
     cooldown = 1
@@ -67,10 +77,16 @@ def main(port, mode, client):
     time_decode = 0
     time_decoder_counter = 0
 
+    # check if cammera can work in manual focus
+    possible = cap.set(cv2.CAP_PROP_FOCUS, focus)
+    if not possible:
+        print("Manual focus on camera not supported! Going with autofocus mode.")
+
+
     while True:
         cap.set(cv2.CAP_PROP_FOCUS, focus)
+        	
         focus += direction
-        
 
         if direction > 0 and focus >= focusMax:
             direction = -step
@@ -80,9 +96,6 @@ def main(port, mode, client):
 
         t = time.time()
         succes, img = cap.read()
-
-    
-        
         
         time_cap += time.time() - t
         time_cap_counter += 1
@@ -92,7 +105,8 @@ def main(port, mode, client):
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             # img = cv2.GaussianBlur(img, (5, 5), 0)
             
-            cv2.imwrite("tmp/stream1.jpeg", img)
+            cv2.imwrite("web/tmp/stream1.jpeg", img)
+            # os.replace("web/tmp/stream1.tmp.jpeg","web/tmp/stream1.jpeg")
 
             # decoding
             t = time.time()
@@ -117,7 +131,9 @@ def main(port, mode, client):
         # cv2.waitKey(1)
 
 
-        
+# -------------------------------------------------
+# run_http_server
+# -------------------------------------------------
 def run_http_server():
     PORT 		= 8000
     DIRECTORY 	= "web"
@@ -126,15 +142,20 @@ def run_http_server():
     # creating stream folder
     if not os.path.isdir(DIRECTORY+'/tmp'):
         os.mkdir(DIRECTORY+'/tmp')
+        
     class Handler(http.server.SimpleHTTPRequestHandler):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, directory=DIRECTORY, **kwargs)
-        with socketserver.TCPServer(("", PORT), Handler) as httpd:
-            print("Serving at port", PORT)
-            httpd.serve_forever()
+            
+    with socketserver.TCPServer(("", PORT), Handler) as httpd:
+        print("Serving at port", PORT)
+        httpd.serve_forever()
 
-   
-    
+
+
+# -------------------------------------------------
+# main()
+# -------------------------------------------------
 
 
 #commands usefull for mosquitto server 
@@ -146,30 +167,12 @@ def run_http_server():
 
 # list_ports()
 
-
-
-
-    # if use_http == True :
-    #     run_http_server()
-    # thread = threading.Thread(None, run_http_server)
-    # thread.start()
-    
-  
-    # ... do things ...
-
-    # Shutdown server
-    # server.shutdown()
-    # thread.join()
-    
-
-    
-
 # Parse CLI arguments
 parser = argparse.ArgumentParser(
     description="you can use 3 arguments like --list, --http, --mqtt"
 )
 parser.add_argument("--list", required=False, type=bool, action=argparse.BooleanOptionalAction)
-parser.add_argument("--http", required=False, type=bool)
+parser.add_argument("--http", required=False, type=bool, action=argparse.BooleanOptionalAction)
 parser.add_argument("--mqtt", required=False, type=str)
 args = parser.parse_args()
 print(args)
@@ -190,7 +193,6 @@ if args.mqtt != None:
         print('cannot connect to mqtt')
         exit()
 
-main(0, cv2.CAP_DSHOW, client)
-# options(args.list, args.http, args.mqtt)
+decodeMain(0, cv2.CAP_DSHOW, client)
 
 	    
