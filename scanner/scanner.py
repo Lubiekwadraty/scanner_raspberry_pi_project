@@ -99,14 +99,40 @@ def decodeMain(port, mode, client):
         
         time_cap += time.time() - t
         time_cap_counter += 1
-        # print(succes)
-        # print(img)
+        
         if(succes):
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            # img = cv2.GaussianBlur(img, (5, 5), 0)
+            
             
             cv2.imwrite("web/tmp/stream1.jpeg", img)
             # os.replace("web/tmp/stream1.tmp.jpeg","web/tmp/stream1.jpeg")
+
+            img2 = img
+
+            # GaussianBlur 
+            # https://docs.opencv.org/4.x/d4/d86/group__imgproc__filter.html
+            img2 = cv2.GaussianBlur(img2, (5, 5), 0)
+            cv2.imwrite("web/tmp/stream2.jpeg", img2)
+            
+            
+            # AdaptiveThreshold
+            # https://docs.opencv.org/4.x/d7/d1b/group__imgproc__misc.html
+            # https://docs.opencv.org/4.x/d7/d4d/tutorial_py_thresholding.html
+            # _, img2 = cv2.threshold(img2, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+            # img = cv2.Canny(img, 50, 150)
+            # _, img2 = cv2.threshold(img2, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+            # img2 = cv2.adaptiveThreshold(img2,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,11,2)
+            img2 = cv2.adaptiveThreshold(img2,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,11,2)
+            cv2.imwrite("web/tmp/stream3.jpeg", img2)
+            
+            
+            # Canny Edge Detection
+            # https://docs.opencv.org/4.x/da/d22/tutorial_py_canny.html
+            # https://docs.opencv.org/4.x/dd/d1a/group__imgproc__feature.html#ga04723e007ed888ddf11d9ba04e2232de
+            # todo: return edges!!!!!
+            img2 = cv2.Canny(img, 50, 150)
+            img2 = cv2.bitwise_not(img2)
+            cv2.imwrite("web/tmp/stream4.jpeg", img2)
 
             # decoding
             t = time.time()
@@ -194,5 +220,3 @@ if args.mqtt != None:
         exit()
 
 decodeMain(0, cv2.CAP_DSHOW, client)
-
-	    
