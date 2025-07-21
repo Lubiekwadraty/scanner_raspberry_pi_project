@@ -168,7 +168,7 @@ def run_http_server():
 parser = argparse.ArgumentParser(
     description="you can use 3 arguments like --list, --http, --mqtt"
 )
-parser.add_argument("--list", required=False, type=bool)
+parser.add_argument("--list", required=False, type=bool, action=argparse.BooleanOptionalAction)
 parser.add_argument("--http", required=False, type=bool)
 parser.add_argument("--mqtt", required=False, type=str)
 args = parser.parse_args()
