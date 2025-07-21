@@ -65,10 +65,7 @@ def main(port, mode):
     time_cap_counter = 0
     time_decode = 0
     time_decoder_counter = 0
-    
-    i = 0
-    frames = []
-    compared = 0
+
     while True:
         cap.set(cv2.CAP_PROP_FOCUS, focus)
         focus += direction
@@ -92,27 +89,11 @@ def main(port, mode):
         # print(img)
         if(succes):
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            img = cv2.GaussianBlur(img, (5, 5), 0)
-            _, simillarity = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-            # img = cv2.Canny(img, 50, 150)
-            if(i > 2):
-                frames.append(simillarity)
-                frames.pop(0)
-                hist1 = cv2.calcHist(frames[0], [0], None, [256], [0, 256])
-                hist2 = cv2.calcHist(frames[1], [0], None, [256], [0, 256])
-                compared = cv2.compareHist(hist1, hist2, cv2.HISTCMP_CHISQR)
+            # img = cv2.GaussianBlur(img, (5, 5), 0)
+            
+            cv2.imwrite("stream/image1.jpeg", img)
 
-                imghist = cv2.imread('steam/hist.jpg', cv2.IMREAD_GRAYSCALE)
-                assert imghist is not None, "file could not be read, check with os.path.exists()"
-                plt.hist(imghist.ravel(),256,[0,256]); 
-                plt.show()
-                # if(compared != 0):
-                #     print("difference", compared) 
-            else:
-                frames.append(img)
-            i += 1
-            cv2.imwrite("stream/image.jpeg", img)
-            cv2.imwrite("stream/image2.jpeg", simillarity)
+            # decoding
             t = time.time()
             barcodes = decode(img)
             time_decode += time.time() - t
@@ -120,7 +101,7 @@ def main(port, mode):
             for barcode in barcodes:
                 currentTime = time.time()
                 if currentTime - LastReadTime > cooldown:
-                    print(barcode.data, compared)
+                    print(barcode.data)
                     myData = barcode.data.decode('utf-8')
                     print(myData)
                     client.publish("scan/code", myData)
@@ -128,7 +109,7 @@ def main(port, mode):
         else:
             print("image not captured")
 
-        # print(focus, time_cap/time_cap_counter, time_decode/time_decoder_counter)
+        print(focus, time_cap/time_cap_counter, time_decode/time_decoder_counter)
         # print(focus)
         # cv2.imshow('Result', img)
         # cv2.waitKey(1)
