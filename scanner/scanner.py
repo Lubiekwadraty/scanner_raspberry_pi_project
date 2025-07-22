@@ -10,6 +10,7 @@ import argparse
 import threading
 import _thread as thread
 import os
+from signal import signal, SIGPIPE, SIG_DFL  
 
 # 
 # -------------------------------------------------
@@ -27,7 +28,7 @@ def list_ports():
         available_ports = []
         while is_working:
             print('opening port %s' %dev_port)
-            camera = cv2.VideoCapture(dev_port, cv2.CAP_DSHOW)
+            camera = cv2.VideoCapture(dev_port, cv2.CAP_V4L2)
             print('opened port %s' %dev_port)
             if not camera.isOpened():
                 is_working = False
@@ -168,14 +169,18 @@ def run_http_server():
     # creating stream folder
     if not os.path.isdir(DIRECTORY+'/tmp'):
         os.mkdir(DIRECTORY+'/tmp')
-        
+
     class Handler(http.server.SimpleHTTPRequestHandler):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, directory=DIRECTORY, **kwargs)
-            
+        def do_GET(self):
+            print("get")
+            super().do_GET(self)
+
     with socketserver.TCPServer(("", PORT), Handler) as httpd:
         print("Serving at port", PORT)
         httpd.serve_forever()
+            
 
 
 
@@ -188,7 +193,7 @@ def run_http_server():
 # mosquitto_sub -h localhost -t skan/kod
 # mosquitto_pub.exe -m "123" -t /test/rtu
 
-# main(0, cv2.CAP_DSHOW) #If it's not working use CAP_DSHOW or CAP_V4L2
+
 # main(0, cv2.CAP_DSHOW)
 
 # list_ports()
@@ -219,4 +224,8 @@ if args.mqtt != None:
         print('cannot connect to mqtt')
         exit()
 
-decodeMain(0, cv2.CAP_DSHOW, client)
+
+while 1:
+    time.sleep(0.1)
+# decodeMain(1, cv2.CAP_V4L2, client)
+# main(0, cv2.CAP_DSHOW) #If it's not working use CAP_DSHOW or CAP_V4L2
