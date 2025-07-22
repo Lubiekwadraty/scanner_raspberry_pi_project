@@ -10,7 +10,23 @@ import argparse
 import threading
 import _thread as thread
 import os
-from signal import signal, SIGPIPE, SIG_DFL  
+import traceback
+import json
+
+
+appConfig = {
+    "adaptiveThreshold.enabled": True,
+    "adaptiveThreshold.blockSize": 11,
+    "adaptiveThreshold.C": 3,
+    "decoding.enabled": True,
+    "gaussianBlur.enabled": True
+}
+appInfo = {
+}
+
+
+
+# from signal import signal, SIGPIPE, SIG_DFL  
 
 # 
 # -------------------------------------------------
@@ -84,7 +100,13 @@ def decodeMain(port, mode, client):
         print("Manual focus on camera not supported! Going with autofocus mode.")
 
 
+    time_start = time.time();
+    time_counter = 0
+
     while True:
+
+        time_counter+=1
+
         cap.set(cv2.CAP_PROP_FOCUS, focus)
         	
         focus += direction
@@ -100,7 +122,7 @@ def decodeMain(port, mode, client):
         
         time_cap += time.time() - t
         time_cap_counter += 1
-        
+
         if(succes):
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             
@@ -112,9 +134,9 @@ def decodeMain(port, mode, client):
 
             # GaussianBlur 
             # https://docs.opencv.org/4.x/d4/d86/group__imgproc__filter.html
-            img2 = cv2.GaussianBlur(img2, (5, 5), 0)
-            cv2.imwrite("web/tmp/stream2.jpeg", img2)
-            
+            if bool(appConfig["gaussianBlur.enabled"]):
+                img2 = cv2.GaussianBlur(img2, (5, 5), 0)
+                cv2.imwrite("web/tmp/stream2.jpeg", img2)
             
             # AdaptiveThreshold
             # https://docs.opencv.org/4.x/d7/d1b/group__imgproc__misc.html
@@ -123,8 +145,18 @@ def decodeMain(port, mode, client):
             # img = cv2.Canny(img, 50, 150)
             # _, img2 = cv2.threshold(img2, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
             # img2 = cv2.adaptiveThreshold(img2,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,11,2)
-            img2 = cv2.adaptiveThreshold(img2,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,11,2)
-            cv2.imwrite("web/tmp/stream3.jpeg", img2)
+
+            if bool(appConfig["adaptiveThreshold.enabled"]):
+                adaptiveThreshold_blockSize = int(appConfig["adaptiveThreshold.blockSize"])
+                if adaptiveThreshold_blockSize <=0:
+                    adaptiveThreshold_blockSize = 1
+                elif adaptiveThreshold_blockSize % 2 != 1:
+                    adaptiveThreshold_blockSize -= 1
+
+                adaptiveThreshold_C = int(appConfig["adaptiveThreshold.C"])
+
+                img2 = cv2.adaptiveThreshold(img2,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,adaptiveThreshold_blockSize,adaptiveThreshold_C)
+                cv2.imwrite("web/tmp/stream3.jpeg", img2)
             
             
             # Canny Edge Detection
@@ -136,26 +168,27 @@ def decodeMain(port, mode, client):
             cv2.imwrite("web/tmp/stream4.jpeg", img2)
 
             # decoding
-            t = time.time()
-            barcodes = decode(img)
-            time_decode += time.time() - t
-            time_decoder_counter += 1
-            for barcode in barcodes:
-                currentTime = time.time()
-                if currentTime - LastReadTime > cooldown:
-                    print(barcode.data)
-                    myData = barcode.data.decode('utf-8')
-                    print(myData)
-                    if client != None:
-                        client.publish("scan/code", myData)
-                    LastReadTime = currentTime
+            if appConfig["decoding.enabled"]:
+                t = time.time()
+                barcodes = decode(img)
+                time_decode += time.time() - t
+                time_decoder_counter += 1
+                for barcode in barcodes:
+                    currentTime = time.time()
+                    if currentTime - LastReadTime > cooldown:
+                        print(barcode.data)
+                        myData = barcode.data.decode('utf-8')
+                        print(myData)
+                        if client != None:
+                            client.publish("scan/code", myData)
+                        LastReadTime = currentTime
         else:
             print("image not captured")
 
-        print(focus, time_cap/time_cap_counter, time_decode/time_decoder_counter)
-        # print(focus)
-        # cv2.imshow('Result', img)
-        # cv2.waitKey(1)
+        appInfo["fps"] = (time.time() - time_start) / time_counter
+        appInfo["focus"] = focus
+        appInfo["time_cap"] = time_cap/time_cap_counter
+        appInfo["time_decode"] = time_decode/time_decoder_counter
 
 
 # -------------------------------------------------
@@ -166,6 +199,7 @@ def run_http_server():
     DIRECTORY 	= "web"
     
     Handler = http.server.SimpleHTTPRequestHandler
+    
     # creating stream folder
     if not os.path.isdir(DIRECTORY+'/tmp'):
         os.mkdir(DIRECTORY+'/tmp')
@@ -173,16 +207,58 @@ def run_http_server():
     class Handler(http.server.SimpleHTTPRequestHandler):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, directory=DIRECTORY, **kwargs)
+
         def do_GET(self):
-            print("get")
-            super().do_GET(self)
+            try:
+                if self.path == '/api/parameters':
+                    self.do_GET_api_parameters()
+                    return
+                if self.path == '/api/info':
+                    self.send_response(200)
+                    self.send_header('Content-type','application/json')
+                    self.end_headers()
+                    self.wfile.write(json.dumps(appInfo).encode())
+                    return
+
+                super().do_GET()
+            except ConnectionAbortedError:
+                "We accept ConnectionAbortedErrors"
+            except:
+                "Nothin to log"
+                # print('GET exception!')
+                print(traceback.format_exc())
+
+        def do_POST(self):
+            try:
+                if self.path == '/api/parameters':
+
+                    s = self.rfile.read(int(self.headers['Content-Length']))
+                    d = json.loads(s.decode('utf-8'))
+                    for key, value in d.items():
+                        if key in appConfig.keys():
+                            appConfig[key] = value
+
+                    self.do_GET_api_parameters()
+                    return
+
+                super().do_GET()
+            except:
+                "Nothin to log"
+                print(traceback.format_exc())
+
+        def log_message(self, format, *args):
+            "Nothin to log"
+
+        def do_GET_api_parameters(self):
+            self.send_response(200)
+            self.send_header('Content-type','application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps(appConfig).encode())
 
     with socketserver.TCPServer(("", PORT), Handler) as httpd:
         print("Serving at port", PORT)
         httpd.serve_forever()
             
-
-
 
 # -------------------------------------------------
 # main()
@@ -225,7 +301,15 @@ if args.mqtt != None:
         exit()
 
 
-while 1:
-    time.sleep(0.1)
-# decodeMain(1, cv2.CAP_V4L2, client)
+#while 1:
+#    time.sleep(0.1)
+
+
+# scanner.py --camera-port 1 --camera-protocol CAP_V4L2|CAP_DSHOW 
+    
+# decodeMain(0, cv2.CAP_V4L2, client)
+decodeMain(0, cv2.CAP_DSHOW, client)
+
+
+
 # main(0, cv2.CAP_DSHOW) #If it's not working use CAP_DSHOW or CAP_V4L2
