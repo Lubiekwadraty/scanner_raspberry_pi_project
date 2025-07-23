@@ -32,14 +32,112 @@ loadNewImages();
 // Aspekt: Pobieranie danych z /api/parameters i wstianie do inputów
 // -----------------------------------------------------------------
 
-// TODO
+let input = document.querySelectorAll('input')
+let appParams = {}
+async function getAppParams() {
+	try {
+    	const response = await fetch("/api/parameters");
+    	if (!response.ok) throw new Error(`Response status: ${response.status}`);
+    	appParams = await response.json();
+		params()
+		inInput()
+	} catch (error) {
+    console.error(error.message);
+  }
+}
+getAppParams()
+function params(){
+	let label = document.querySelectorAll('.appParams li label')
+	let span = document.querySelectorAll('.appParams li span')
+	let keys = Object.keys(appParams)
+	let values = Object.values(appParams)
+	for(let i = 0; i < 5; i++){
+		label[i].innerHTML =keys[i]
+		span[i].innerHTML = ": " + values[i]
+	}
+}
+
+function inInput(){
+	input.forEach(element => {
+		if(element.type == 'checkbox'){
+			element.checked = appParams[element.name]
+      return
+		}
+		if(element.type =='submit') return
+		if(appParams[element.name] == null) return
+		if(element.type == 'hidden') return;
+		element.value = appParams[element.name]
+	});
+}
+
+// function checkbox(){
+//   let checkboxes = document.querySelectorAll('input[type="checkbox"]')
+//   checkboxes.forEach(checkbox => {
+//     if(checkbox.checked){
+//       checkbox.value = 'True'
+//     }  
+//     else{
+//       checkbox.value = 'False'
+//     }
+//   });
+// }
+
+
+// function updateParams() {
+// 	console.log(document.querySelectorAll("[app-params]"))
+//   	document.querySelectorAll("[app-params]").forEach((e) => {
+//     let s = e.getAttribute("app-params");
+// 	console.log("s: ", s)
+//     s = eval(s);
+//     e.innerHTML = s;
+//   });
+// }
+// getAppParams()
+// setInterval(getAppParams, 500);
+
 
 // -----------------------------------------------------------------
 // Aspekt: Zapięcie się na inputach i przy zmianie POST na /api/parameters
 // -----------------------------------------------------------------
 
-// TODO
 
+
+async function send(){
+
+  let inputs = document.querySelectorAll('input')
+  let appConfig = {}
+  inputs.forEach(input => {
+
+    if(input.type == 'checkbox' && input.checked){
+			appConfig[input.name] = input.value;
+      return;
+		}
+    appConfig[input.name] = input.value
+
+  });
+
+  try{
+    const response = await fetch("/api/parameters", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(appConfig)
+    });
+    const result = await response.json()
+    console.log(result)
+  }catch (e){
+    console.error(e)
+  }
+}
+
+const form = document.querySelector('form');
+
+form.addEventListener('submit', (event)=>{
+  //checkbox()
+  send()
+  event.preventDefault();
+})
 // -----------------------------------------------------------------
 // Aspekt: Pobieranie danych z /api/info i wstianie na stronę
 // -----------------------------------------------------------------

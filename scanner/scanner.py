@@ -100,7 +100,7 @@ def decodeMain(port, mode, client):
         print("Manual focus on camera not supported! Going with autofocus mode.")
 
 
-    time_start = time.time();
+    time_start = time.time()
     time_counter = 0
 
     while True:

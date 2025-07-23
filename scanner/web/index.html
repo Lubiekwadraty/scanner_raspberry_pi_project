@@ -7,7 +7,7 @@
   </head>
   <body>
     <h1>Barcode Scanner</h1>
-    <form>
+    <form method="post" action="api/parameters">
       <div style="display: flex; flex-flow: row wrap">
         <div style="width: 640px; height: 480px; margin: 1em">
           <img src="/tmp/stream1.jpeg" class="mjpg" />
@@ -29,7 +29,7 @@
           <ul class="img-controls">
             <li>
               <label>enabled</label>
-              <input type="checkbox" name="gaussianBlur.enabled" step="1" />
+              <input type="checkbox" name="gaussianBlur.enabled" value="true"/>
             </li>
             <li>
               <label>ksize</label>
@@ -58,6 +58,7 @@
                 type="checkbox"
                 name="adaptiveThreshold.enabled"
                 step="1"
+                value="true"
               />
             </li>
             <li>
@@ -91,17 +92,21 @@
           </h6>
           <ul class="img-controls">
             <li>
-              <label>enabled</label>
+              <label>decoding enabled</label>
               <input
                 type="checkbox"
-                name="adaptiveThreshold.enabled"
+                name="decoding.enabled"
                 step="1"
+                value="true"
               />
             </li>
           </ul>
         </div>
       </div>
+	  <!-- <input type="submit" name="action" value="wyślij"> -->
+	   <button name="action" value="foo">submit</button>
       <hr />
+	  <div>
       <ul class="appInfo">
         <li>
           <label>FPS</label>
@@ -124,6 +129,29 @@
           >
         </li>
       </ul>
+	  <ul class="appParams js_appParams">
+		<li>
+			<label></label>
+			<span>...</span>
+		</li>
+		<li>
+			<label></label>
+			<span>...</span>
+		</li>
+		<li>
+			<label></label>
+			<span>...</span>
+		</li>
+		<li>
+			<label></label>
+			<span>...</span>
+		</li>
+		<li>
+			<label></label>
+			<span>...</span>
+		</li>
+	  </ul>
+	</div>
     </form>
 
     <script src="script.js"></script>
