@@ -13,25 +13,34 @@ A barcode scanner using Python and OpenCV.
 
 ## Instalation
 
-1. Install Python3 and add to Path
-2. Install OpenCV for Python:
+1. Install Python3 and in an installer add it to Path
+
+	https://www.python.org/downloads/
+
+
+2. Check if your python works by typing `python3` in console
+
+
+3. Install OpenCV for Python:
 
 	pip install opencv-python
 
-3. `pyzbar` - a Python library for barcode and QR code reading:	
+
+4. `pyzbar` - a Python library for barcode and QR code reading:	
 
 	pip install pyzbar
 
 
-4. `paho-mqtt` - a Python MQTT client library:
+5. `paho-mqtt` - a Python MQTT client library:
 
 	pip install paho-mqtt
 
-5. `StringUtils` - a library to validate, manipulate and generate strings:
+
+6. `StringUtils` - a library to validate, manipulate and generate strings:
 
 	pip install python-string-utils
 
-
+7.Read the comments in scanner.py, they might be usefull if something didin't work, last comment is crucial for program
 
 ## Usage 
 

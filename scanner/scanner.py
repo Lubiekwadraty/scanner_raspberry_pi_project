@@ -321,4 +321,4 @@ decodeMain(0, cv2.CAP_DSHOW, client)
 
 
 
-# main(0, cv2.CAP_DSHOW) #If it's not working use CAP_DSHOW or CAP_V4L2
+# decodeMain(0, cv2.CAP_DSHOW) #If it's not working use CAP_DSHOW or CAP_V4L2
