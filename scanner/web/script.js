@@ -29,7 +29,7 @@ setInterval(loadNewImages, 250);
 loadNewImages();
 
 // -----------------------------------------------------------------
-// Aspekt: Pobieranie danych z /api/parameters i wstianie do inputów
+// Aspekt: Pobieranie danych z /api/parameters i wstawianie do inputów
 // -----------------------------------------------------------------
 
 let input = document.querySelectorAll('input')
@@ -100,20 +100,23 @@ function inInput(){
 // Aspekt: Zapięcie się na inputach i przy zmianie POST na /api/parameters
 // -----------------------------------------------------------------
 
+async function send(form){
 
-
-async function send(){
-
-  let inputs = document.querySelectorAll('input')
+  // collect form -> JSON
   let appConfig = {}
+  let inputs = form.querySelectorAll('input')
   inputs.forEach(input => {
 
-    if(input.type == 'checkbox' && input.checked){
-			appConfig[input.name] = input.value;
-      return;
-		}
+	// protect agains property overwrites 
+	if (input.name in appConfig) return;
+	  
+    if (input.type == 'checkbox')
+    {
+    	if (input.checked) appConfig[input.name] = input.value;
+		return;
+	}
+    
     appConfig[input.name] = input.value
-
   });
 
   try{
@@ -133,11 +136,10 @@ async function send(){
 
 const form = document.querySelector('form');
 
-form.addEventListener('submit', (event)=>{
-  //checkbox()
-  send()
-  event.preventDefault();
-})
+form.addEventListener('submit', function(event) { send(this); event.preventDefault(); })
+form.addEventListener('change', function(event) { send(this); });
+form.addEventListener('keyup', function(event) { send(this); });
+
 // -----------------------------------------------------------------
 // Aspekt: Pobieranie danych z /api/info i wstianie na stronę
 // -----------------------------------------------------------------

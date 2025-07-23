@@ -12,6 +12,7 @@ import _thread as thread
 import os
 import traceback
 import json
+from StringUtils import StringUtils
 
 
 appConfig = {
@@ -19,7 +20,8 @@ appConfig = {
     "adaptiveThreshold.blockSize": 11,
     "adaptiveThreshold.C": 3,
     "decoding.enabled": True,
-    "gaussianBlur.enabled": True
+    "gaussianBlur.enabled": True,
+    "gaussianBlur.ksize": 5
 }
 appInfo = {
 }
@@ -133,9 +135,14 @@ def decodeMain(port, mode, client):
             img2 = img
 
             # GaussianBlur 
-            # https://docs.opencv.org/4.x/d4/d86/group__imgproc__filter.html
-            if bool(appConfig["gaussianBlur.enabled"]):
-                img2 = cv2.GaussianBlur(img2, (5, 5), 0)
+            # https://docs.opencv.org/4.x/d4/d86/group__imgproc__filter.html\
+            if StringUtils.boolValue(appConfig["gaussianBlur.enabled"]):
+                ksize = StringUtils.intValue(appConfig["gaussianBlur.ksize"])
+                if ksize<=0:
+                	ksize = 1
+                elif ksize % 2 != 1:
+                    ksize  -= 1
+                img2 = cv2.GaussianBlur(img2, (ksize, ksize), 0)
                 cv2.imwrite("web/tmp/stream2.jpeg", img2)
             
             # AdaptiveThreshold
@@ -146,7 +153,7 @@ def decodeMain(port, mode, client):
             # _, img2 = cv2.threshold(img2, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
             # img2 = cv2.adaptiveThreshold(img2,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,11,2)
 
-            if bool(appConfig["adaptiveThreshold.enabled"]):
+            if StringUtils.boolValue(appConfig["adaptiveThreshold.enabled"]):
                 adaptiveThreshold_blockSize = int(appConfig["adaptiveThreshold.blockSize"])
                 if adaptiveThreshold_blockSize <=0:
                     adaptiveThreshold_blockSize = 1
@@ -168,7 +175,7 @@ def decodeMain(port, mode, client):
             cv2.imwrite("web/tmp/stream4.jpeg", img2)
 
             # decoding
-            if appConfig["decoding.enabled"]:
+            if StringUtils.boolValue(appConfig["decoding.enabled"]):
                 t = time.time()
                 barcodes = decode(img)
                 time_decode += time.time() - t
@@ -289,6 +296,8 @@ if args.list == True:
 
 if args.http == True:
     thread.start_new_thread(run_http_server, ())
+    # open default browser on http://localhost:8000/
+    os.system('cmd /c start explorer "http://localhost:8000"')
 
 client = None
 if args.mqtt != None: 
