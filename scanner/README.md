@@ -21,6 +21,11 @@ A barcode scanner using Python and OpenCV.
 2. Check if your python works by typing `python3` in console
 
 
+3. If you don't have pip you need to install it by this command:
+
+	python -m ensurepip --upgrade
+
+   If it didin't work, you need to use second option that is described here: https://pip.pypa.io/en/stable/installation/
 3. Install OpenCV for Python:
 
 	pip install opencv-python
