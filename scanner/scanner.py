@@ -3,7 +3,7 @@ import cv2
 from pyzbar.pyzbar import decode
 import time
 import paho.mqtt.client as mqtt
-from matplotlib import pyplot as plt
+# from matplotlib import pyplot as plt
 import http.server
 import socketserver
 import argparse
@@ -139,12 +139,12 @@ def decodeMain(port, mode, client):
             if StringUtils.boolValue(appConfig["gaussianBlur.enabled"]):
                 ksize = StringUtils.intValue(appConfig["gaussianBlur.ksize"])
                 if ksize<=0:
-                	ksize = 1
+                    ksize = 1
                 elif ksize % 2 != 1:
                     ksize  -= 1
                 img2 = cv2.GaussianBlur(img2, (ksize, ksize), 0)
                 cv2.imwrite("web/tmp/stream2.jpeg", img2)
-            
+
             # AdaptiveThreshold
             # https://docs.opencv.org/4.x/d7/d1b/group__imgproc__misc.html
             # https://docs.opencv.org/4.x/d7/d4d/tutorial_py_thresholding.html
