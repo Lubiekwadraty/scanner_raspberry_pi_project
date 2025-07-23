@@ -26,26 +26,26 @@ A barcode scanner using Python and OpenCV.
 	python -m ensurepip --upgrade
 
    If it didin't work, you need to use second option that is described here: https://pip.pypa.io/en/stable/installation/
-3. Install OpenCV for Python:
+4. Install OpenCV for Python:
 
 	pip install opencv-python
 
 
-4. `pyzbar` - a Python library for barcode and QR code reading:	
+5. `pyzbar` - a Python library for barcode and QR code reading:	
 
 	pip install pyzbar
 
 
-5. `paho-mqtt` - a Python MQTT client library:
+6. `paho-mqtt` - a Python MQTT client library:
 
 	pip install paho-mqtt
 
 
-6. `StringUtils` - a library to validate, manipulate and generate strings:
+7. `StringUtils` - a library to validate, manipulate and generate strings:
 
 	pip install python-string-utils
 
-7.Read the comments in scanner.py, they might be usefull if something didin't work, last comment is crucial for program
+8. Read the comments in scanner.py, they might be usefull if something didin't work, last comment is crucial for program
 
 ## Usage 
 
