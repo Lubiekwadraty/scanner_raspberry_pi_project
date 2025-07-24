@@ -4,7 +4,7 @@ class StringUtils:
 	
 	@staticmethod
 	def boolValue(v):
-		if v==True or v=="true" or v=="on":
+		if v==True or v=="true" or v=="on" or v=="enabled" or v=="checked" or v=="tak" or v=="t" or v=="y":
 			return True
 			
 		if isinstance(v, (int, float, complex)) and v>0:

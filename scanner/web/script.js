@@ -2,7 +2,6 @@
 // Aspekt: semi mjpeg
 // -----------------------------------------------------------------
 
-// kod Mai
 function updateImage(imgElement) {
   // create/get preloader
   let preloader = imgElement._ourPreloader;
@@ -148,10 +147,12 @@ form.addEventListener('keyup', function(event) { send(this); });
 let mqttMessage = document.getElementById('mqtt')
 const client = new Paho.MQTT.Client("localhost", 9001, "jsClient");
 
+  // when connection lost
   client.onConnectionLost = function(responseObject) {
     console.log("Connection lost:", responseObject.errorMessage);
   };
 
+  // when connection
   client.connect({
     onSuccess: () => {
       console.log("Connected");
@@ -160,10 +161,13 @@ const client = new Paho.MQTT.Client("localhost", 9001, "jsClient");
     onFailure: err => console.error("Failed to connect:", err)
   });
 
+  // message
   client.onMessageArrived = (message) => {
     console.log("Message from Python:", message.payloadString);
     mqttMessage.innerHTML += `<li>${message.payloadString}</li>`
   };
+//net start mosquitto
+//net stop mosquitto
 // mosquitto -v -c mosquitto.conf
 // -----------------------------------------------------------------
 // Aspekt: Pobieranie danych z /api/info i wstianie na stronę
