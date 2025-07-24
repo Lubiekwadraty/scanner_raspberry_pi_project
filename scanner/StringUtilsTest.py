@@ -25,7 +25,7 @@ class MyTests(unittest.TestCase):
 		self.assertEqual(StringUtils.boolValue("enabled"), True)
 		self.assertEqual(StringUtils.boolValue("disabled"), False)
 
-		self.assertEqual(StringUtils.boolValue("chcecked"), True)
+		self.assertEqual(StringUtils.boolValue("checked"), True)
 		self.assertEqual(StringUtils.boolValue("unchcecked"), False)
 
 	# polskie tak/nie    	
