@@ -45,7 +45,7 @@ a:hover, a:active{
 }
 
 #LiCreation{
-    overflow: auto;
+    overflow: scroll;
 }
 
 /* button formatting taken from -> https://getcssscan.com/css-buttons-examples  */
