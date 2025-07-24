@@ -145,7 +145,12 @@ form.addEventListener('keyup', function(event) { send(this); });
 // -----------------------------------------------------------------
 
 // Create a client instance
-const client = new Paho.MQTT.Client("localhost", 9001, "clientId_1");
+let mqttMessage = document.getElementById('mqtt')
+const client = new Paho.MQTT.Client("localhost", 9001, "jsClient");
+
+  client.onConnectionLost = function(responseObject) {
+    console.log("Connection lost:", responseObject.errorMessage);
+  };
 
   client.connect({
     onSuccess: () => {
@@ -155,8 +160,9 @@ const client = new Paho.MQTT.Client("localhost", 9001, "clientId_1");
     onFailure: err => console.error("Failed to connect:", err)
   });
 
-  client.onMessageArrived = message => {
+  client.onMessageArrived = (message) => {
     console.log("Message from Python:", message.payloadString);
+    mqttMessage.innerHTML += `<li>${message.payloadString}</li>`
   };
 // mosquitto -v -c mosquitto.conf
 // -----------------------------------------------------------------
