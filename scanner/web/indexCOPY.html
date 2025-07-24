@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <h1>Barcode Scanner</h1>
+    <form method="post">
+        <!--STREAM 1 -->
+      <div style="display: flex; flex-flow: row wrap">
+        <div style="width: 640px; height: 480px; margin: 1em">
+          <img src="/tmp/stream1.jpeg" class="mjpg" />
+        </div>
+        <!-- STREAM 1 END -->
+        <!-- STREAM 2 & CONTROLS -->
+        <div style="width: 320px; height: 240px; margin: 1em">
+          <img
+            src="/tmp/stream2.jpeg"
+            class="mjpg"
+            style="width: 320px; height: 240px"
+          />
+          <h6>
+            <!-- CONTROLS -->
+            GaussianBlur
+            <a
+              href="https://docs.opencv.org/4.x/d4/d86/group__imgproc__filter.html"
+              target="blank"
+              >?</a
+            >
+          </h6>
+          <ul class="img-controls">
+            <li>
+              <label>enabled</label>
+              <input type="checkbox" 	name="gaussianBlur.enabled" value="true"/>
+              <input type="hidden" 		name="gaussianBlur.enabled" value="false"/>
+            </li>
+            <li>
+              <label>ksize</label>
+              <input type="number" name="gaussianBlur.ksize" step="1" />
+            </li>
+          </ul>
+          <!-- CONTROLS END -->
+        </div>
+        <!-- STREAM 2 & CONTROLS END-->
+        <!-- STREAM 3 & CONTROLS -->
+        <div style="width: 320px; height: 240px; margin: 1em">
+          <img
+            src="/tmp/stream3.jpeg"
+            class="mjpg"
+            style="width: 320px; height: 240px"
+          />
+          <h6>
+            <!-- CONTROLS -->
+            AdaptiveThreshold
+            <a
+              href="https://docs.opencv.org/4.x/d7/d1b/group__imgproc__misc.html#ga72b913f352e4a1b1b397736707afcde3"
+              target="blank"
+              >?</a
+            >
+          </h6>
+          <ul class="img-controls">
+            <li>
+              <label>enabled</label>
+              <input
+                type="checkbox"
+                name="adaptiveThreshold.enabled"
+                value="true"
+              />
+              <input type="hidden" name="adaptiveThreshold.enabled" value="false"/>
+            </li>
+            <li>
+              <label>blockSize</label>
+              <input
+                type="number"
+                name="adaptiveThreshold.blockSize"
+                step="1"
+              />
+            </li>
+            <li>
+              <label>C</label>
+              <input type="number" name="adaptiveThreshold.C" step="1" />
+            </li>
+          </ul>
+          <!-- CONTROLS END -->
+        </div>
+        <!-- STREAM 3 & CONTROLS END -->
+        <!-- STREAM 4 & CONTROLS -->
+        <div style="width: 320px; height: 240px; margin: 1em">
+          <img
+            src="/tmp/stream4.jpeg"
+            class="mjpg"
+            style="width: 320px; height: 240px"
+          />
+          <h6>
+            <!-- CONTROLS -->
+            Canny Edge Detection
+            <a
+              href="https://docs.opencv.org/4.x/da/d22/tutorial_py_canny.html"
+              target="blank"
+              >?</a>
+            + bitwise_not
+          </h6>
+          <ul>
+          <li><label>enabled</label>
+          <input type="checkbox" name="canny.enabled" value="true"/>
+        <input type="hidden" name="canny.enabled" value="false"/>
+        </li>
+        </ul>
+        <!-- CONTROLS END  -->
+        </div>
+        <!--STREAM 4 & CONTROLS END-->
+      </div>
+	  <!-- <input type="submit" name="action" value="wyślij"> -->
+	   <button name="action" value="foo">submit</button>
+      <hr />
+
+		<h6>Barcodes</h6>
+        <label>decoding enabled</label>
+        <input
+          type="checkbox"
+          name="decoding.enabled"
+          value="true"
+        />
+        <input type="hidden" name="decoding.enabled" value="false"/>
+        <br/>
+		<!-- <textarea style="width: 100%; height: 5em;">
+....
+		</textarea>       -->
+    <ul id="mqtt">
+
+    </ul>  
+        
+      <hr />
+      
+	  <div>
+      <ul class="appInfo">
+        <li>
+          <label>FPS</label>
+          <span data-app-info="Math.floor(100 / appInfo.fps)/100">...</span>
+        </li>
+        <li>
+          <label>Focus</label>
+          <span data-app-info="appInfo.focus">...</span>
+        </li>
+        <li>
+          <label>Capture</label>
+          <span data-app-info="Math.round(appInfo.time_cap * 1000) + 'ms'"
+            >...</span
+          >
+        </li>
+        <li>
+          <label>Decode</label>
+          <span data-app-info="Math.round(appInfo.time_decode * 1000) + 'ms'"
+            >...</span
+          >
+        </li>
+      </ul>
+	  <ul class="appParams js_appParams">
+		<li>
+			<label></label>
+			<span>...</span>
+		</li>
+		<li>
+			<label></label>
+			<span>...</span>
+		</li>
+		<li>
+			<label></label>
+			<span>...</span>
+		</li>
+		<li>
+			<label></label>
+			<span>...</span>
+		</li>
+		<li>
+			<label></label>
+			<span>...</span>
+		</li>
+	  </ul>
+	</div>
+
+    </form>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
