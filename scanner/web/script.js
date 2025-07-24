@@ -118,7 +118,7 @@ async function send(form){
     
     appConfig[input.name] = input.value
   });
-
+    console.log(appConfig)
   try{
     const response = await fetch("/api/parameters", {
       method: "POST",
@@ -128,7 +128,7 @@ async function send(form){
       body: JSON.stringify(appConfig)
     });
     const result = await response.json()
-    console.log(result)
+    // console.log(result)
   }catch (e){
     console.error(e)
   }
@@ -140,6 +140,25 @@ form.addEventListener('submit', function(event) { send(this); event.preventDefau
 form.addEventListener('change', function(event) { send(this); });
 form.addEventListener('keyup', function(event) { send(this); });
 
+// -----------------------------------------------------------------
+// Aspekt: Pobieranie kodu kreskowego za pomocą protokołu mqtt
+// -----------------------------------------------------------------
+
+// Create a client instance
+const client = new Paho.MQTT.Client("localhost", 9001, "clientId_1");
+
+  client.connect({
+    onSuccess: () => {
+      console.log("Connected");
+      client.subscribe("scan/code");
+    },
+    onFailure: err => console.error("Failed to connect:", err)
+  });
+
+  client.onMessageArrived = message => {
+    console.log("Message from Python:", message.payloadString);
+  };
+// mosquitto -v -c mosquitto.conf
 // -----------------------------------------------------------------
 // Aspekt: Pobieranie danych z /api/info i wstianie na stronę
 // -----------------------------------------------------------------
@@ -167,3 +186,4 @@ function updateView() {
 
 getAppInfo();
 setInterval(getAppInfo, 500);
+

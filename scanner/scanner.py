@@ -21,10 +21,10 @@ appConfig = {
     "adaptiveThreshold.C": 3,
     "decoding.enabled": True,
     "gaussianBlur.enabled": True,
-    "gaussianBlur.ksize": 5
+    "gaussianBlur.ksize": 5,
+    "canny.enabled" : True
 }
-appInfo = {
-}
+appInfo = {}
 
 
 
@@ -170,9 +170,10 @@ def decodeMain(port, mode, client):
             # https://docs.opencv.org/4.x/da/d22/tutorial_py_canny.html
             # https://docs.opencv.org/4.x/dd/d1a/group__imgproc__feature.html#ga04723e007ed888ddf11d9ba04e2232de
             # todo: return edges!!!!!
-            img2 = cv2.Canny(img, 50, 150)
-            img2 = cv2.bitwise_not(img2)
-            cv2.imwrite("web/tmp/stream4.jpeg", img2)
+            if StringUtils.boolValue(appConfig["canny.enabled"]):
+                img2 = cv2.Canny(img, 50, 150)
+                img2 = cv2.bitwise_not(img2)
+                cv2.imwrite("web/tmp/stream4.jpeg", img2)
 
             # decoding
             if StringUtils.boolValue(appConfig["decoding.enabled"]):
