@@ -197,7 +197,7 @@ def decodeMain(port, mode, client):
         appInfo["focus"] = focus
         appInfo["time_cap"] = time_cap/time_cap_counter
         appInfo["time_decode"] = time_decode/time_decoder_counter
-
+        print(focus)
 
 # -------------------------------------------------
 # run_http_server
