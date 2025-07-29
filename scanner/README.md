@@ -45,7 +45,13 @@ A barcode scanner using Python and OpenCV.
 
 	pip install python-string-utils
 
-8. Read the comments in scanner.py, they might be usefull if something didin't work, last comment is crucial for program
+8. Read the comments in scanner.py, they might be usefull if something didin't work
+
+
+9. To use chip Reader you need to uncomment 2 libraries in chip_reader.py
+
+
+10. On your raspberry pi you need to install mqtt broker like Mosquitto and node-red 
 
 ## Usage 
 
