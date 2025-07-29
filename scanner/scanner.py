@@ -13,6 +13,10 @@ import os
 import traceback
 import json
 from StringUtils import StringUtils
+from chip_reader import chip_reader
+import queue
+
+
 
 
 appConfig = {
@@ -26,7 +30,7 @@ appConfig = {
 }
 appInfo = {}
 
-
+result_queue = queue.Queue()
 
 # from signal import signal, SIGPIPE, SIG_DFL  
 
@@ -46,7 +50,7 @@ def list_ports():
         available_ports = []
         while is_working:
             print('opening port %s' %dev_port)
-            camera = cv2.VideoCapture(dev_port, cv2.CAP_DSHOW)
+            camera = cv2.VideoCapture(dev_port, cv2.CAP_V4L2)
             print('opened port %s' %dev_port)
             if not camera.isOpened():
                 is_working = False
@@ -164,8 +168,15 @@ def decodeMain(port, mode, client):
 
                 img2 = cv2.adaptiveThreshold(img2,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,adaptiveThreshold_blockSize,adaptiveThreshold_C)
                 cv2.imwrite("web/tmp/stream3.jpeg", img2)
-            
-            
+                
+            try:
+                code = result_queue.get_nowait()
+                print(code)
+                if client != None:
+                    client.publish("scan/code", code)
+            except queue.Empty:
+                pass
+
             # Canny Edge Detection
             # https://docs.opencv.org/4.x/da/d22/tutorial_py_canny.html
             # https://docs.opencv.org/4.x/dd/d1a/group__imgproc__feature.html#ga04723e007ed888ddf11d9ba04e2232de
@@ -190,13 +201,14 @@ def decodeMain(port, mode, client):
                         if client != None:
                             client.publish("scan/code", myData)
                         LastReadTime = currentTime
-        else:
-            print("image not captured")
+        # else:
+        #     print("image not captured")
 
         appInfo["fps"] = (time.time() - time_start) / time_counter
         appInfo["focus"] = focus
         appInfo["time_cap"] = time_cap/time_cap_counter
-        appInfo["time_decode"] = time_decode/time_decoder_counter
+        if time_decoder_counter != 0:
+            appInfo["time_decode"] = time_decode/time_decoder_counter
         print(focus)
 
 # -------------------------------------------------
@@ -231,6 +243,8 @@ def run_http_server():
                 super().do_GET()
             except ConnectionAbortedError:
                 "We accept ConnectionAbortedErrors"
+            except BrokenPipeError:
+                "broken pipe"
             except:
                 "Nothin to log"
                 # print('GET exception!')
@@ -262,7 +276,7 @@ def run_http_server():
             self.send_header('Content-type','application/json')
             self.end_headers()
             self.wfile.write(json.dumps(appConfig).encode())
-
+    
     with socketserver.TCPServer(("", PORT), Handler) as httpd:
         print("Serving at port", PORT)
         httpd.serve_forever()
@@ -288,6 +302,7 @@ parser = argparse.ArgumentParser(
 )
 parser.add_argument("--list", required=False, type=bool, action=argparse.BooleanOptionalAction)
 parser.add_argument("--http", required=False, type=bool, action=argparse.BooleanOptionalAction)
+parser.add_argument("--chip", required=False, type=bool, action=argparse.BooleanOptionalAction)
 parser.add_argument("--mqtt", required=False, type=str)
 args = parser.parse_args()
 print(args)
@@ -310,6 +325,8 @@ if args.mqtt != None:
         print('cannot connect to mqtt')
         exit()
 
+if args.chip == True:
+    thread.start_new_thread(chip_reader, (result_queue,))
 
 #while 1:
 #    time.sleep(0.1)
