@@ -1,10 +1,14 @@
 const express = require('express')
 const cors = require('cors')
+// const mqtt = require("mqtt"); // https://www.npmjs.com/package/mqtt
 const mariadb = require('mariadb');
 const app = express()
 const port = 3000
 
 app.use(cors())
+
+// const client = mqtt.connect("localhost");
+
 
 
 app.get("/api/personData", async (req, res) => {
@@ -20,13 +24,13 @@ const pool = mariadb.createPool({
     connectionLimit: 5
 });
 
-async function executeDatabaseOperations(barcode) {
+async function executeDatabaseOperations() {
     let conn;
     try {
         conn = await pool.getConnection(); // Get a connection from the pool
 
         // --- SELECT Query ---
-        const rows = await conn.query(`SELECT * FROM workers WHERE barcode_id ="${barcode}" `, ["active"]);
+        const rows = await conn.query(`SELECT * FROM workers WHERE barcode_id ="1" `, ["active"]);
         console.log("Selected Rows:", rows);
         return rows;
     } catch (err) {
