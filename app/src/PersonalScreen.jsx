@@ -5,18 +5,26 @@ const apiUrl = "http://localhost:3000/api/personData"
 export default function PersonalScreen(){
     const [data, setData] = useState(null)
 
+
     console.debug('render')
     useEffect(() => {
         console.debug('fetchData')
-        setTimeout(fetchData, 1000)
+        setTimeout(fetchData, 2000);
     },[])
     
+    
     async function fetchData(){
-        const response = await fetch(apiUrl);
-        const jsonResponse = await response.json()
-        const dataJson = jsonResponse;
-        console.log(dataJson)
-        setData(dataJson[0])
+        try{
+            const response = await fetch(apiUrl);
+            const jsonResponse = await response.json()
+            const dataJson = jsonResponse;
+            console.log(dataJson);
+            setData(dataJson[0]);
+        }
+        catch (err){
+            console.log(err)
+        }
+        
     }
 
     if(data == null){

@@ -1,0 +1,27 @@
+CREATE DATABASE kPoint; 
+
+CREATE TABLE workers(
+	id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(40) NOT NULL,
+	surname VARCHAR(35) NOT NULL,
+	time_started time,
+    work_time time
+);
+
+CREATE TABLE barcodes(
+	id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    code BIGINT UNIQUE,
+    employee_id INT(11),
+	FOREIGN KEY (employee_id) REFERENCES workers(id) 
+);
+
+CREATE TABLE rfids(
+	id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    code BIGINT UNIQUE,
+    employee_id INT(11),
+	FOREIGN KEY (employee_id) REFERENCES workers(id) 
+);
+
+INSERT INTO workers(id, first_name, surname) VALUES(1, "Stanisław", "Błąd");
+
+INSERT INTO barcodes(id, code, employee_id) VALUES(1, 143000100019406, 1); 
