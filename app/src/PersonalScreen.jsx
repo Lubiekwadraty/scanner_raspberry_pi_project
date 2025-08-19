@@ -26,14 +26,41 @@ export default function PersonalScreen({barcode_id}){
         
     }
 
+    async function fetchActionData(code) {
+        const apiActionUrl = `http://localhost:3000/api/personAction?worker_id=${data.id}&&code=${code}`;
+        try{
+            const response = await fetch(apiActionUrl);
+        }
+        catch (err){
+            console.log(err);
+        }
+    }
+    function start(){
+        fetchActionData("start");
+    }
+
+    function end(){
+        fetchActionData("end");
+    }
+
+    function start_break(){
+        fetchActionData("start_break");
+    }
+
+    function end_break(){
+        fetchActionData("end_break");
+    }
+
     if(data == null){
         return <h1>loading</h1>
     }
     return(
         <div>
             <h1>Welcome {data.first_name}</h1>            
-            <button className="button">Start work</button>
-            <button className="button">End Work</button>
+            <button className="button" onClick={start}>Start work</button>
+            <button className="button" onClick={end}>End Work</button> <br />
+            <button className="button" onClick={start_break}>Start Break</button>
+            <button className="button" onClick={end_break}>End Break</button>
         </div>
     )
 }

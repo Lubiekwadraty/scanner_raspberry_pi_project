@@ -53,3 +53,11 @@ CREATE TABLE event_log(
     FOREIGN KEY (worker_id) REFERENCES workers(id),
     FOREIGN KEY (type_id) REFERENCES event_types(id)
 );
+
+INSERT INTO event_types(code, name) VALUES("start", "Start Work");
+
+INSERT INTO event_types(code, name) VALUES("end", "End Work");
+
+INSERT INTO event_types(code, name) VALUES("start_break", "Start Break");
+
+INSERT INTO event_types(code, name) VALUES("end_break", "End Break");

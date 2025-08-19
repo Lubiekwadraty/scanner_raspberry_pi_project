@@ -7,6 +7,35 @@ const port = 3000
 app.use(cors())
 
 
+app.get("/api/personAction", async (req, res) => {
+    let conn;
+    try {
+        conn = await pool.getConnection(); // Get a connection from the pool
+        console.log(req.query);
+        let worker_id = req.query.worker_id;
+        let code = req.query.code;
+        let check = await conn.query(`SELECT code FROM event_types`);
+
+        const codes = check.map((e) => e.code)
+        if(!codes.includes(code)){
+            res.send(400);
+        }
+        else{
+            let row = await conn.query(`SELECT id FROM event_types WHERE code=?`, [code]);
+            await conn.query(`INSERT INTO event_log(worker_id, type_id) VALUES (?, ?)`, [worker_id, row[0].id]);
+            res.sendStatus(200);
+        }
+        
+    } catch (err) {
+        console.error("Database operation error:", err);
+        throw err; // Re-throw to handle higher up
+    } finally {
+        if (conn) {
+            conn.release(); // Release connection back to the pool
+            console.log("Connection released to pool.");
+        }
+    }
+})
 
 app.get("/api/personData", async (req, res) => {
         // const rows = await executeDatabaseOperations();
