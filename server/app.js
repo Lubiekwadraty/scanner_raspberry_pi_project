@@ -13,13 +13,18 @@ app.get("/api/personData", async (req, res) => {
     let conn;
     try {
         conn = await pool.getConnection(); // Get a connection from the pool
-
-        // --- SELECT Query ---
-        const rows = await conn.query(`SELECT workers.id, workers.name, barcodes.code FROM workers JOIN barcodes ON workers.id = barcodes.employee_id WHERE workers.id=1;`, ["active"]);
-        console.log("Selected Rows:", rows);
-        // res.sendStatus(400);
-        res.json(rows);
-        console.log(req.query)
+        console.log(Object.values(req.query)[0]);
+        let code = Object.values(req.query)[0];
+        // if(isNaN(code)){
+        //     res.status(400).send("invalid code");
+        // }
+        // else{
+            // --- SELECT Query ---
+            const rows = await conn.query(`SELECT workers.id, workers.first_name FROM workers LEFT JOIN barcodes ON workers.id = barcodes.employee_id LEFT JOIN rfids ON workers.id = rfids.employee_id WHERE barcodes.code=? OR rfids.code=?;;`, [code, code]);
+            console.log("Selected Rows:", rows);
+            // res.sendStatus(400);
+            res.json(rows);
+        // }
     } catch (err) {
         console.error("Database operation error:", err);
         throw err; // Re-throw to handle higher up

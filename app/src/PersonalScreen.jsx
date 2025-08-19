@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import "./PersonalScreen.css"
-const apiUrl = "http://localhost:3000/api/personData"
 
-export default function PersonalScreen(){
+export default function PersonalScreen({barcode_id}){
     const [data, setData] = useState(null)
-
+    const apiUrl = `http://localhost:3000/api/personData?barcode_id=${barcode_id}`
 
     console.debug('render')
     useEffect(() => {
@@ -32,7 +31,7 @@ export default function PersonalScreen(){
     }
     return(
         <div>
-            <h1>Welcome {data.name}</h1>            
+            <h1>Welcome {data.first_name}</h1>            
             <button className="button">Start work</button>
             <button className="button">End Work</button>
         </div>

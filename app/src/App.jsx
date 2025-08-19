@@ -7,13 +7,14 @@ import mqtt from "mqtt"; // https://www.npmjs.com/package/mqtt
 
 export default function App() {
   const client = mqtt.connect("mqtt://localhost:9001");
-  const [change, setChange] = useState(false)    
-    let latestMessage = null;
+  const [change, setChange] = useState(false);    
+  const [latestMessage, setLatestMessage] = useState(null);
+  
 
     client.on("message", async (topic, message) => {
         // message is Buffer
         console.log(message.toString());
-        latestMessage = message.toString();
+        setLatestMessage(message.toString());
         setChange(true);
         // client.end();
     });
@@ -21,7 +22,7 @@ export default function App() {
     client.subscribe("scan/code");
   return (
     <>
-      {change ? <PersonalScreen/> : <Default/>}
+      {change ? <PersonalScreen barcode_id={latestMessage}/> : <Default/>}
     </>
   )
 }

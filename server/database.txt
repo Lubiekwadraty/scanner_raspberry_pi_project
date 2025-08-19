@@ -25,3 +25,31 @@ CREATE TABLE rfids(
 INSERT INTO workers(id, first_name, surname) VALUES(1, "Stanisław", "Błąd");
 
 INSERT INTO barcodes(id, code, employee_id) VALUES(1, 143000100019406, 1); 
+
+INSERT INTO barcodes(id, code, employee_id) VALUES(2, 7630049203488, 1); 
+
+
+//query for rfids and barcodes
+SELECT workers.id, workers.first_name FROM workers LEFT JOIN barcodes ON workers.id = barcodes.employee_id LEFT JOIN rfids ON workers.id = rfids.employee_id WHERE barcodes.code=143000100019406 OR rfids.code = 143000100019406; 
+
+//query only for barcodes
+SELECT workers.id, workers.first_name FROM workers JOIN barcodes ON workers.id = barcodes.employee_id WHERE code=${code};
+
+ALTER TABLE workers DROP COLUMN time_started; 
+
+ALTER TABLE workers DROP COLUMN work_time; 
+
+CREATE TABLE event_types(
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(20) NOT NULL,
+    name VARCHAR(50)
+);
+
+CREATE TABLE event_log(
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    time_stamp TIMESTAMP DEFAULT NOW(),
+    worker_id INT,
+    type_id INT,
+    FOREIGN KEY (worker_id) REFERENCES workers(id),
+    FOREIGN KEY (type_id) REFERENCES event_types(id)
+);
