@@ -22,6 +22,7 @@ CREATE TABLE rfids(
 	FOREIGN KEY (employee_id) REFERENCES workers(id) 
 );
 
+//values that i used for test
 INSERT INTO workers(id, first_name, surname) VALUES(1, "Stanisław", "Błąd");
 
 INSERT INTO barcodes(id, code, employee_id) VALUES(1, 143000100019406, 1); 

@@ -4,8 +4,8 @@ import SentScreen from "./SentScreen";
 export default function PersonalScreen({barcode_id}){
     const [data, setData] = useState(null)
     const [send, setSend] = useState(false)
-    const apiUrl = `http://localhost:3000/api/personData?barcode_id=${barcode_id}`
-
+    const apiUrl = `http://${document.location.hostname}:3000/api/personData?barcode_id=${barcode_id}`
+    
     console.debug('render')
     useEffect(() => {
         console.debug('fetchData')
@@ -28,7 +28,7 @@ export default function PersonalScreen({barcode_id}){
     }
 
     async function fetchActionData(code) {
-        const apiActionUrl = `http://localhost:3000/api/personAction?worker_id=${data.id}&&code=${code}`;
+        const apiActionUrl = `http://${document.location.hostname}:3000/api/personAction?worker_id=${data.id}&&code=${code}`;
         try{
             const response = await fetch(apiActionUrl);
             setSend(true)
