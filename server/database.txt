@@ -1,4 +1,6 @@
-CREATE DATABASE kPoint; 
+CREATE DATABASE kPoint; //example name
+
+USE kPoint;
 
 CREATE TABLE workers(
 	id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,

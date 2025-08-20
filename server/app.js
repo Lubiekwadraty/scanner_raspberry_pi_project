@@ -67,8 +67,8 @@ app.get("/api/personData", async (req, res) => {
 
 const pool = mariadb.createPool({
     host: `localhost`,
-    user: 'root',
-    password: 'pass4all',
+    user: 'root', 
+    password: '', //you need to add password for your mariadDB database
     database: 'kPoint',
     connectionLimit: 10
 });
