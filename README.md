@@ -37,16 +37,27 @@ An Express server that's connect to mariaDB database and sends there an action t
 
 	pip install opencv-python
 
+	or
+
+	sudo apt install python3-opencv
+
 
 5. `pyzbar` - a Python library for barcode and QR code reading:	
 
 	pip install pyzbar
+
+	or
+
+	sudo apt install libzbar0
 
 
 6. `paho-mqtt` - a Python MQTT client library:
 
 	pip install paho-mqtt
 
+	or
+
+	sudo apt install python3-paho-mqtt
 
 7. `StringUtils` - a library to validate, manipulate and generate strings:
 
