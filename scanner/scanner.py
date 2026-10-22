@@ -209,7 +209,7 @@ def decodeMain(port, mode, client):
         appInfo["time_cap"] = time_cap/time_cap_counter
         if time_decoder_counter != 0:
             appInfo["time_decode"] = time_decode/time_decoder_counter
-        print(focus)
+        #print(focus)
 
 # -------------------------------------------------
 # run_http_server
@@ -219,7 +219,7 @@ def run_http_server():
     DIRECTORY 	= "web"
     
     Handler = http.server.SimpleHTTPRequestHandler
-    
+    print("dziala")
     # creating stream folder
     if not os.path.isdir(DIRECTORY+'/tmp'):
         os.mkdir(DIRECTORY+'/tmp')
@@ -300,9 +300,9 @@ def run_http_server():
 parser = argparse.ArgumentParser(
     description="you can use 3 arguments like --list, --http, --mqtt"
 )
-parser.add_argument("--list", required=False, type=bool, action=argparse.BooleanOptionalAction)
-parser.add_argument("--http", required=False, type=bool, action=argparse.BooleanOptionalAction)
-parser.add_argument("--chip", required=False, type=bool, action=argparse.BooleanOptionalAction)
+parser.add_argument("--list", required=False, action=argparse.BooleanOptionalAction)
+parser.add_argument("--http", required=False, action=argparse.BooleanOptionalAction)
+parser.add_argument("--chip", required=False, action=argparse.BooleanOptionalAction)
 parser.add_argument("--mqtt", required=False, type=str)
 args = parser.parse_args()
 print(args)
@@ -334,8 +334,8 @@ if args.chip == True:
 
 # scanner.py --camera-port 1 --camera-protocol CAP_V4L2|CAP_DSHOW 
     
-# decodeMain(0, cv2.CAP_V4L2, client)
-decodeMain(0, cv2.CAP_DSHOW, client)
+decodeMain(0, cv2.CAP_V4L2, client)
+# decodeMain(0, cv2.CAP_DSHOW, client)
 
 
 
